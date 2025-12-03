@@ -2,7 +2,7 @@
 
 I am building a production-ready booking management system to sharpen my full-stack skills. The goal is to modernize SoundHire’s rental business with an online experience for customers and a secure workflow for administrators, while gaining deeper practice with Django, cloud databases, and session-based authentication.
 
-The SoundHire web app is a Django project backed by a Supabase PostgreSQL database. It loads equipment packages (Basic, Standard, Premium) with live pricing, accepts booking requests through validated forms, and provides an admin dashboard for reviewing, filtering, and updating reservation statuses.
+This is a Django web application that provides a user-friendly interface for the SoundHire sound equipment rental business. It integrates with the Supabase database created in Module 1 to manage bookings online.
 
 **Run the development server**
 ```bash
