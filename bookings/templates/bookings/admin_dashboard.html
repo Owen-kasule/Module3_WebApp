@@ -1,0 +1,208 @@
+{% extends 'bookings/base.html' %}
+
+{% block title %}Admin Dashboard - SoundHire{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="display-6">
+        📊 Bookings Dashboard
+    </h1>
+    <a href="{% url 'admin_logout' %}" class="btn btn-outline-danger">
+        Logout
+    </a>
+</div>
+
+<!-- Summary Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Total Bookings</h6>
+                <p class="card-text display-6 fw-bold">{{ total_bookings }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center border-warning">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Pending</h6>
+                <p class="card-text display-6 fw-bold text-warning">{{ pending_count }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center border-success">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Confirmed</h6>
+                <p class="card-text display-6 fw-bold text-success">{{ confirmed_count }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center border-primary">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Revenue (Confirmed)</h6>
+                <p class="card-text h5 fw-bold text-primary">UGX {{ total_revenue|floatformat:0 }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Form -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" action="{% url 'admin_dashboard' %}" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label for="statusFilter" class="form-label">Filter by Status</label>
+                <select name="status" id="statusFilter" class="form-select" onchange="this.form.submit()">
+                    <option value="all" {% if current_filter == 'all' %}selected{% endif %}>All Bookings</option>
+                    <option value="pending" {% if current_filter == 'pending' %}selected{% endif %}>Pending Only</option>
+                    <option value="confirmed" {% if current_filter == 'confirmed' %}selected{% endif %}>Confirmed Only</option>
+                    <option value="cancelled" {% if current_filter == 'cancelled' %}selected{% endif %}>Cancelled Only</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Apply Filter</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Bookings Table -->
+<div class="card">
+    <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">
+            {% if current_filter == 'all' %}
+            All Bookings
+            {% elif current_filter == 'pending' %}
+            Pending Bookings
+            {% elif current_filter == 'confirmed' %}
+            Confirmed Bookings
+            {% elif current_filter == 'cancelled' %}
+            Cancelled Bookings
+            {% endif %}
+            ({{ bookings|length }} results)
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        {% if bookings %}
+        <div class="table-responsive">
+            <table class="table table-hover table-striped mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Customer</th>
+                        <th>Contact</th>
+                        <th>Event Date</th>
+                        <th>Package</th>
+                        <th>Price</th>
+                        <th>DJ</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td>
+                            <span class="badge bg-secondary">#{{ booking.id }}</span>
+                        </td>
+                        <td>
+                            <strong>{{ booking.customer_name }}</strong>
+                            {% if booking.notes %}
+                            <br><small class="text-muted" title="{{ booking.notes }}">📝 Has notes</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <small>
+                                📧 {{ booking.customer_email }}<br>
+                                📱 {{ booking.customer_phone }}
+                            </small>
+                        </td>
+                        <td>
+                            <span class="text-nowrap">{{ booking.event_date }}</span>
+                        </td>
+                        <td>
+                            <strong>{{ booking.package_name }}</strong>
+                        </td>
+                        <td class="text-end">
+                            UGX {{ booking.package_price|floatformat:0 }}
+                        </td>
+                        <td class="text-center">
+                            {% if booking.dj_included %}
+                            <span class="badge bg-success">
+                                ✓ +{{ booking.dj_fee|floatformat:0 }}
+                            </span>
+                            {% else %}
+                            <span class="badge bg-secondary">—</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <strong>UGX {{ booking.package_price|add:booking.dj_fee|floatformat:0 }}</strong>
+                        </td>
+                        <td>
+                            {% if booking.status == 'pending' %}
+                            <span class="badge bg-warning text-dark">Pending</span>
+                            {% elif booking.status == 'confirmed' %}
+                            <span class="badge bg-success">Confirmed</span>
+                            {% elif booking.status == 'cancelled' %}
+                            <span class="badge bg-danger">Cancelled</span>
+                            {% else %}
+                            <span class="badge bg-secondary">{{ booking.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm" role="group">
+                                {% if booking.status == 'pending' %}
+                                <!-- Confirm button for pending bookings -->
+                                <form method="post" action="{% url 'confirm_booking' booking.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success btn-sm" title="Confirm booking">
+                                        ✓
+                                    </button>
+                                </form>
+                                {% endif %}
+                                
+                                {% if booking.status != 'cancelled' %}
+                                <!-- Cancel button for non-cancelled bookings -->
+                                <form method="post" action="{% url 'cancel_booking' booking.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm" 
+                                            onclick="return confirm('Are you sure you want to cancel booking #{{ booking.id }}?')"
+                                            title="Cancel booking">
+                                        ✗
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% if booking.notes %}
+                    <tr class="table-active">
+                        <td colspan="10">
+                            <small><strong>Notes:</strong> {{ booking.notes }}</small>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-5 text-center text-muted">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-inbox mb-3" viewBox="0 0 16 16">
+                <path d="M4.98 4a.5.5 0 0 0-.39.188L1.54 8H6a.5.5 0 0 1 .5.5 1.5 1.5 0 1 0 3 0A.5.5 0 0 1 10 8h4.46l-3.05-3.812A.5.5 0 0 0 11.02 4zm-1.17-.437A1.5 1.5 0 0 1 4.98 3h6.04a1.5 1.5 0 0 1 1.17.563l3.7 4.625a.5.5 0 0 1 .106.374l-.39 3.124A1.5 1.5 0 0 1 14.117 13H1.883a1.5 1.5 0 0 1-1.489-1.314l-.39-3.124a.5.5 0 0 1 .106-.374z"/>
+            </svg>
+            <p class="lead">No bookings found</p>
+            <p>
+                {% if current_filter != 'all' %}
+                Try changing the filter or
+                {% endif %}
+                <a href="{% url 'home' %}">go to the home page</a> to create a new booking.
+            </p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

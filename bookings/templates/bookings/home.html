@@ -1,0 +1,164 @@
+{% extends 'bookings/base.html' %}
+
+{% block title %}SoundHire - Book Sound Equipment{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Package Showcase -->
+<div class="hero-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h1>Professional Sound Equipment Rental</h1>
+            <p>High-quality sound systems and professional DJ services for your events in Kampala, Uganda</p>
+        </div>
+        
+        <!-- Packages Showcase in Hero -->
+        <div class="packages-showcase">
+            <h2 class="section-title">Our Packages</h2>
+            
+            {% if packages %}
+            <div class="row g-4">
+                {% for package in packages %}
+                <div class="col-md-4">
+                    <div class="card h-100 package-card">
+                        <div class="card-header">
+                            {{ package.name }}
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">{{ package.description }}</p>
+                            
+                            <div class="pricing-info">
+                                <div class="price-item">
+                                    <strong>Daily Rate</strong>
+                                    <span class="badge">UGX {{ package.daily_rate|floatformat:0|default:"N/A" }}</span>
+                                </div>
+                                
+                                <div class="price-item mt-3">
+                                    <small><strong>Add DJ Service:</strong> +UGX {{ dj_rate|floatformat:0 }}/day</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-warning">
+                <p class="mb-0">No packages available at this time. Please check back later or contact us directly.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Booking Form Section -->
+<section id="booking-form" class="booking-section">
+    <div class="container">
+        <form method="post" action="{% url 'home' %}" novalidate>
+            <h2>Book Your Equipment</h2>
+            <p class="text-muted mb-4">Fill out the form below to request a booking. We'll contact you to confirm details.</p>
+            {% csrf_token %}
+            
+            <!-- Customer Information -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="id_customer_name" class="form-label">{{ form.customer_name.label }}</label>
+                    {{ form.customer_name }}
+                    {% if form.customer_name.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.customer_name.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="id_customer_email" class="form-label">{{ form.customer_email.label }}</label>
+                    {{ form.customer_email }}
+                    {% if form.customer_email.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.customer_email.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="id_customer_phone" class="form-label">{{ form.customer_phone.label }}</label>
+                    {{ form.customer_phone }}
+                    {% if form.customer_phone.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.customer_phone.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="id_event_date" class="form-label">{{ form.event_date.label }}</label>
+                    {{ form.event_date }}
+                    {% if form.event_date.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.event_date.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% if form.event_date.help_text %}
+                    <small class="form-text text-muted">{{ form.event_date.help_text }}</small>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Package Selection -->
+            <div class="mb-3">
+                <label for="id_package_id" class="form-label">{{ form.package_id.label }}</label>
+                {{ form.package_id }}
+                {% if form.package_id.errors %}
+                <div class="invalid-feedback d-block">
+                    {% for error in form.package_id.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- DJ Service -->
+            <div class="mb-3 form-check">
+                {{ form.include_dj }}
+                <label class="form-check-label" for="id_include_dj">
+                    {{ form.include_dj.label }}
+                </label>
+                {% if form.include_dj.help_text %}
+                <small class="form-text text-muted d-block">{{ form.include_dj.help_text }}</small>
+                {% endif %}
+            </div>
+            
+            <!-- Notes -->
+            <div class="mb-3">
+                <label for="id_notes" class="form-label">{{ form.notes.label }}</label>
+                {{ form.notes }}
+                {% if form.notes.errors %}
+                <div class="invalid-feedback d-block">
+                    {% for error in form.notes.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Submit Button -->
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    Submit Booking Request
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+
+{% endblock %}

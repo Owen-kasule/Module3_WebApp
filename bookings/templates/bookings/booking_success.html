@@ -1,0 +1,69 @@
+{% extends 'bookings/base.html' %}
+
+{% block title %}Booking Confirmed - SoundHire{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card text-center success-card">
+            <div class="card-body p-5">
+                <!-- Success Icon -->
+                <div class="success-icon mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor" class="bi bi-check-circle-fill text-success" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                    </svg>
+                </div>
+                
+                <h1 class="display-5 fw-bold text-success mb-3">Booking Request Submitted!</h1>
+                
+                <p class="lead mb-4">Thank you, <strong>{{ customer_name }}</strong>!</p>
+                
+                <p class="text-muted mb-4">
+                    We've received your booking request for <strong>{{ package_name }}</strong>. 
+                    Our team will review your request and contact you within 24 hours to confirm 
+                    the details and finalize your booking.
+                </p>
+                
+                <!-- What's Next -->
+                <div class="card bg-light mt-4 mb-4">
+                    <div class="card-body text-start">
+                        <h5 class="card-title">📋 What happens next?</h5>
+                        <ol class="mb-0">
+                            <li>We'll review your booking request</li>
+                            <li>Our team will contact you via email or phone</li>
+                            <li>We'll confirm equipment availability for your date</li>
+                            <li>Once confirmed, we'll finalize payment and delivery details</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <!-- Important Note -->
+                <div class="alert alert-info">
+                    <strong>📧 Check your email!</strong> We've sent a confirmation to the email address you provided.
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+                    <a href="{% url 'home' %}" class="btn btn-primary">
+                        Back to Home
+                    </a>
+                    <a href="{% url 'home' %}#booking-form" class="btn btn-outline-secondary">
+                        Make Another Booking
+                    </a>
+                </div>
+                
+                <!-- Contact Information -->
+                <div class="mt-5 pt-4 border-top">
+                    <h6 class="text-muted mb-3">Need help or have questions?</h6>
+                    <p class="mb-1">
+                        <strong>Email:</strong> info@soundhire.ug
+                    </p>
+                    <p class="mb-0">
+                        <strong>Phone:</strong> +256 XXX XXXXXX
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

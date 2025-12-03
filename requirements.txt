@@ -1,0 +1,11 @@
+# Core dependencies for SoundHire Cloud application
+supabase>=2.0.0
+python-dotenv==1.0.0
+
+# Module 2: Data Analysis dependencies
+pandas
+matplotlib
+
+# Module 3: Web Application dependencies
+django>=4.2.0
+supabase>=2.0.0
